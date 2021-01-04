@@ -17,46 +17,47 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
+    <Button
+        android:id="@+id/btn_send_location"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="Send location"/>
+
     <TextView
         android:id="@+id/location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:textSize="25dp"
-        android:text="Location: " />
+        android:text="Location: "
+        />
 
-    <Button
-        android:id="@+id/btn_send_location"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/location"
-        android:text="Send location"/>
 
-    <ListView
-        android:id="@+id/list_conversation"
+    <View
+        android:id="@+id/line1"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_below="@id/btn_send_location"
-        android:layout_above="@+id/text_input"/>
+        android:layout_height="1dp"
+        android:background="#aaaaaa"
+        android:layout_below="@id/location"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="20dp"
 
-    <RelativeLayout
-        android:id="@+id/text_input"
-        android:layout_width="match_parent"
+        />
+
+    <TextView
+        android:id="@+id/location_other_device"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_below="@id/line1"
+        android:textSize="25dp"
+        />
 
-        <EditText
-            android:id="@+id/ed_enter_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="100dp" />
 
-        <Button
-            android:id="@+id/btn_send_msg"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="@string/str_label_btn_send"
-            android:layout_alignParentRight="true" />
-    </RelativeLayout>
+
+
 
 
 </RelativeLayout>

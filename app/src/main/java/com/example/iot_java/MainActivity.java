@@ -44,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     private ChatUtils chatUtils;
 
-    private ListView listMainChat;
-    private EditText edCreateMessage;
-    private Button btnSendMessage;
     private ArrayAdapter<String> adapterMainChat;
 
     private final int LOCATION_PERMISSION_REQUEST = 101;
@@ -64,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager;
     private TextView textLatLong;
+    private TextView textLatLongOtherDevice;
     private Button btnSendLocation;
     private String latitude, longitude;
 
@@ -90,12 +88,16 @@ public class MainActivity extends AppCompatActivity {
                 case MESSAGE_WRITE:
                     byte[] buffer1 = (byte[]) message.obj;
                     String outputBuffer = new String(buffer1);
-                    adapterMainChat.add("Me: " + outputBuffer);
+                    //adapterMainChat.clear();
+                    //adapterMainChat.add("Me: " + outputBuffer);
                     break;
                 case MESSAGE_READ:
                     byte[] buffer = (byte[]) message.obj;
                     String inputBuffer = new String(buffer, 0, message.arg1);
-                    adapterMainChat.add(connectedDevice + ": " + inputBuffer);
+                    textLatLongOtherDevice.setText(connectedDevice + " location: " + inputBuffer);
+                    //adapterMainChat.clear();
+                    //adapterMainChat.add(connectedDevice + ": " + inputBuffer);
+
                     break;
                 case MESSAGE_DEVICE_NAME:
                     connectedDevice = message.getData().getString(DEVICE_NAME);
@@ -120,17 +122,17 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
 
-        init();
         initBluetooth();
         chatUtils = new ChatUtils(context, handler);
 
         textLatLong = findViewById(R.id.location);
+        textLatLongOtherDevice = findViewById(R.id.location_other_device);
         initLocationGPS();
         btnSendLocation = findViewById(R.id.btn_send_location);
 
         btnSendLocation.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public synchronized void onClick(View v) {
                 String inputString = "\nLatitude: " + latitude + "\nLongitude: " + longitude;
                 chatUtils.write(inputString.getBytes());
             }
@@ -138,25 +140,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void init() {
-        listMainChat = findViewById(R.id.list_conversation);
-        edCreateMessage = findViewById(R.id.ed_enter_message);
-        btnSendMessage = findViewById(R.id.btn_send_msg);
 
-        adapterMainChat = new ArrayAdapter<String>(context, R.layout.message_layout);
-        listMainChat.setAdapter(adapterMainChat);
-
-        btnSendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String message = edCreateMessage.getText().toString();
-                if (!message.isEmpty()) {
-                    edCreateMessage.setText("");
-                    chatUtils.write(message.getBytes());
-                }
-            }
-        });
-    }
 
     private void initBluetooth() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -167,11 +151,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initLocationGPS() {
+        textLatLong.setText("My device location: \nLatitude: " + latitude + "\nLongitude: " + longitude);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this ,new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST);
-            return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationListener() {
             @Override
@@ -190,10 +174,11 @@ public class MainActivity extends AppCompatActivity {
             public void onProviderEnabled(@NonNull String provider) {
 
             }
-
             @Override
             public void onProviderDisabled(@NonNull String provider) {
+
             }
+
         });
     }
 
@@ -274,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (bluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
             Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
             startActivity(discoveryIntent);
         }
     }
