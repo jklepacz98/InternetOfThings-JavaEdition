@@ -73,15 +73,18 @@ public class MainActivity extends AppCompatActivity {
                     switch (message.arg1) {
                         case ChatUtils.STATE_NONE:
                             setState("Not Connected");
+                            textLatLongOtherDevice.setText("No connected device");
                             break;
                         case ChatUtils.STATE_LISTEN:
                             setState("Not Connected");
+                            textLatLongOtherDevice.setText("No connected device");
                             break;
                         case ChatUtils.STATE_CONNECTING:
                             setState("Connecting...");
                             break;
                         case ChatUtils.STATE_CONNECTED:
                             setState("Connected: " + connectedDevice);
+                            textLatLongOtherDevice.setText("Connected: " + connectedDevice);
                             break;
                     }
                     break;
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 case MESSAGE_READ:
                     byte[] buffer = (byte[]) message.obj;
                     String inputBuffer = new String(buffer, 0, message.arg1);
-                    textLatLongOtherDevice.setText(connectedDevice + " location: " + inputBuffer);
+                    textLatLongOtherDevice.setText("Connected: " + connectedDevice + inputBuffer);
                     //adapterMainChat.clear();
                     //adapterMainChat.add(connectedDevice + ": " + inputBuffer);
 
@@ -110,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     });
+
 
     private void setState(CharSequence subTitle) {
         getSupportActionBar().setSubtitle(subTitle);
@@ -127,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
 
         textLatLong = findViewById(R.id.location);
         textLatLongOtherDevice = findViewById(R.id.location_other_device);
+
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},LOCATION_PERMISSION_REQUEST);
         initLocationGPS();
         btnSendLocation = findViewById(R.id.btn_send_location);
 
@@ -140,8 +146,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     private void initBluetooth() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -153,9 +157,9 @@ public class MainActivity extends AppCompatActivity {
     private void initLocationGPS() {
         textLatLong.setText("My device location: \nLatitude: " + latitude + "\nLongitude: " + longitude);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this ,new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST);
+        System.out.println("CheckPermissionGPSbefore " + (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED));
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+          return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationListener() {
             @Override
@@ -174,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProviderEnabled(@NonNull String provider) {
 
             }
+
             @Override
             public void onProviderDisabled(@NonNull String provider) {
 
@@ -224,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
+/*    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -247,10 +252,10 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }).show();
             }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-    }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+    }*/
 
     private void enableBluetooth() {
         if (!bluetoothAdapter.isEnabled()) {

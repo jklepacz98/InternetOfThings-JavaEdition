@@ -53,6 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/line1"
         android:textSize="25dp"
+        android:text="No connected device"
         />
 
 
