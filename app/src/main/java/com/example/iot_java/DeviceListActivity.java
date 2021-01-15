@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,10 +28,13 @@ import java.util.Set;
 public class DeviceListActivity extends AppCompatActivity {
     private ListView listPairedDevices, listAvailableDevices;
     private ProgressBar progressScanDevices;
+    private Button btnSearchDevices;
 
     private ArrayAdapter<String> adapterPairedDevices, adapterAvailableDevices;
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,14 @@ public class DeviceListActivity extends AppCompatActivity {
                 intent.putExtra("deviceAddress", address);
                 setResult(RESULT_OK, intent);
                 finish();
+            }
+        });
+
+        btnSearchDevices = findViewById(R.id.btn_scan_devices);
+        btnSearchDevices.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scanDevices();
             }
         });
 
@@ -98,6 +110,8 @@ public class DeviceListActivity extends AppCompatActivity {
         });
     }
 
+
+
     private BroadcastReceiver bluetoothDeviceListener = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -128,11 +142,25 @@ public class DeviceListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_scan_devices:
-                scanDevices();
+            case R.id.menu_enable_bluetooth:
+                enableBluetooth();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void enableBluetooth() {
+        if (!bluetoothAdapter.isEnabled()) {
+            bluetoothAdapter.enable();
+        } else {
+            Toast.makeText(context, "Bluetooth is already enabled", Toast.LENGTH_SHORT).show();
+        }
+
+        if (bluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoveryIntent);
         }
     }
 

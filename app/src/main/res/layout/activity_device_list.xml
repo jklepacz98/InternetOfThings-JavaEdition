@@ -6,6 +6,16 @@
     android:orientation="vertical"
     tools:context="com.example.iot_java.DeviceListActivity">
 
+    <Button
+        android:id="@+id/btn_scan_devices"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Search for available devices"
+        android:layout_margin="10dp"
+        android:layout_gravity="center"
+        android:icon="@drawable/ic_baseline_bluetooth_searching_24"
+        android:title="@string/str_menu_scan_devices" />
+
     <ProgressBar
         android:id="@+id/progress_scan_devices"
         android:layout_width="25dp"
