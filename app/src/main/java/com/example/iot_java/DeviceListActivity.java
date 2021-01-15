@@ -153,8 +153,6 @@ public class DeviceListActivity extends AppCompatActivity {
     public void enableBluetooth() {
         if (!bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.enable();
-        } else {
-            Toast.makeText(context, "Bluetooth is already enabled", Toast.LENGTH_SHORT).show();
         }
 
         if (bluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
