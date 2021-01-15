@@ -165,7 +165,7 @@ public class ChatUtils {
         bundle.putString("toast", "Unable to connect device");
         msg.setData(bundle);
         handler.sendMessage(msg);
-
+        setState(STATE_NONE);
         // Start the service over to restart listening mode
         ChatUtils.this.start();
     }
@@ -176,7 +176,7 @@ public class ChatUtils {
         bundle.putString("toast", "Device connection was lost");
         msg.setData(bundle);
         handler.sendMessage(msg);
-
+        setState(STATE_NONE);
         // Start the service over to restart listening mode
         ChatUtils.this.start();
     }
